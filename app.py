@@ -98,7 +98,9 @@ html_code = """
                 mergeTetromino();
                 clearLines();
                 if (gameOver()) {
-                    resetGame();
+                    cancelAnimationFrame(rAF);
+                    clearInterval(dropInterval);
+                    return;
                 } else {
                     spawnTetromino();
                 }
