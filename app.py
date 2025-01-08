@@ -10,16 +10,22 @@ html_code = """
     <style>
         body { text-align: center; }
         canvas { background: #000; display: block; margin: 0 auto; }
+        .button { border-radius: 50%; width: 80px; height: 80px; font-size: 20px; cursor: pointer; }
+        .start { background-color: red; color: white; }
+        .exit { background-color: blue; color: white; }
     </style>
 </head>
 <body>
     <h1>Simple Tetris Game</h1>
-    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
+    <br>
+    <button class="button start" onclick="startGame()">Start</button>
+    <button class="button exit" onclick="exitGame()">Exit</button>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const context = canvas.getContext('2d');
-        const grid = 32;
-        const tetrominoes = [
+        let canvas = document.getElementById('gameCanvas');
+        let context = canvas.getContext('2d');
+        let grid = 32;
+        let tetrominoes = [
             [[1, 1, 1], [0, 1, 0]],
             [[0, 1, 1], [1, 1, 0]],
             [[1, 1, 0], [0, 1, 1]],
@@ -129,6 +135,17 @@ html_code = """
             rAF = requestAnimationFrame(gameLoop);
         }
 
+        function startGame() {
+            canvas.style.display = 'block';
+            resetGame();
+            gameLoop();
+        }
+
+        function exitGame() {
+            cancelAnimationFrame(rAF);
+            canvas.style.display = 'none';
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 tetrominoX--;
@@ -147,9 +164,6 @@ html_code = """
                 }
             }
         });
-
-        resetGame();
-        gameLoop();
     </script>
 </body>
 </html>
