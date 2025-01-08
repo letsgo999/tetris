@@ -14,7 +14,7 @@ html_code = """
         .start { background-color: red; color: white; }
         .exit { background-color: blue; color: white; }
         .replay { background-color: green; color: white; }
-        #score { font-size: 20px; color: white; }
+        #score { font-size: 20px; color: white; margin-top: 10px; }
     </style>
 </head>
 <body>
