@@ -10,17 +10,21 @@ html_code = """
     <style>
         body { text-align: center; }
         canvas { background: #000; display: block; margin: 0 auto; }
-        .button { border-radius: 50%; width: 80px; height: 80px; font-size: 20px; cursor: pointer; }
+        .button { border-radius: 50%; width: 80px; height: 80px; font-size: 20px; cursor: pointer; margin: 5px; }
         .start { background-color: red; color: white; }
         .exit { background-color: blue; color: white; }
+        .replay { background-color: green; color: white; }
     </style>
 </head>
 <body>
     <h1>Simple Tetris Game</h1>
     <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
     <br>
-    <button class="button start" onclick="startGame()">Start</button>
-    <button class="button exit" onclick="exitGame()">Exit</button>
+    <div>
+        <button class="button start" onclick="startGame()">Start</button>
+        <button class="button replay" onclick="replayGame()" style="display: none;">Replay</button>
+        <button class="button exit" onclick="exitGame()">Exit</button>
+    </div>
     <script>
         let canvas = document.getElementById('gameCanvas');
         let context = canvas.getContext('2d');
@@ -40,6 +44,7 @@ html_code = """
         let tetrominoX = 0; // Current tetromino X coordinate
         let tetrominoY = 0; // Current tetromino Y coordinate
         let board = []; // Game board
+        let dropInterval = null; // Interval for dropping tetromino
 
         function resetGame() {
             board = Array.from({ length: 20 }, () => Array(10).fill(0));
@@ -129,7 +134,6 @@ html_code = """
         }
 
         function gameLoop() {
-            updateGame();
             drawBoard();
             drawTetromino();
             rAF = requestAnimationFrame(gameLoop);
@@ -151,13 +155,24 @@ html_code = """
 
         function startGame() {
             canvas.style.display = 'block';
+            document.querySelector('.start').style.display = 'none';
+            document.querySelector('.replay').style.display = 'inline-block';
             resetGame();
             gameLoop();
+            dropInterval = setInterval(updateGame, 1000); // Drop tetromino every 1 second
+        }
+
+        function replayGame() {
+            exitGame();
+            startGame();
         }
 
         function exitGame() {
             cancelAnimationFrame(rAF);
+            clearInterval(dropInterval);
             canvas.style.display = 'none';
+            document.querySelector('.start').style.display = 'inline-block';
+            document.querySelector('.replay').style.display = 'none';
         }
 
         document.addEventListener('keydown', (e) => {
@@ -188,4 +203,4 @@ html_code = """
 st.title('Tetris Game')
 
 # HTML 및 JavaScript 포함
-components.html(html_code, height=700)
+components.html(html_code, height=800)
