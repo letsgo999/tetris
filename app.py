@@ -17,8 +17,7 @@ html_code = """
     </style>
 </head>
 <body>
-    <h1>Simple Tetris Game</h1>
-    <canvas id="gameCanvas" width="300" height="600" style="display: none;"></canvas>
+    <canvas id="gameCanvas" width="320" height="640"></canvas>
     <br>
     <div>
         <button class="button start" onclick="startGame()">Start</button>
