@@ -9,7 +9,12 @@ html_code = """
     <title>Tetris Game</title>
     <style>
         body { text-align: center; color: white; background-color: black; }
-        canvas { background: #000; display: block; margin: 0 auto; }
+        canvas { 
+            background: #000; 
+            display: block; 
+            margin: 0 auto; 
+            border: 5px solid white; /* 흰색 굵은 테두리 추가 */
+        }
         .button { border-radius: 50%; width: 80px; height: 80px; font-size: 20px; cursor: pointer; margin: 5px; }
         .start { background-color: red; color: white; }
         .exit { background-color: blue; color: white; }
