@@ -9,7 +9,6 @@ html_code = """
     <title>Tetris Game</title>
     <style>
         body { text-align: center; color: white; background-color: black; }
-        h1 { margin-top: 0; padding-top: 20px; } /* 상단 여유 공간 추가 */
         canvas { 
             background: #000; 
             display: block; 
@@ -24,7 +23,6 @@ html_code = """
     </style>
 </head>
 <body>
-    <h1>Tetris Game</h1>
     <div id="score">Score: 0</div>
     <canvas id="gameCanvas" width="320" height="576"></canvas> <!-- 세로폭 두 칸 줄임 -->
     <br>
@@ -226,8 +224,6 @@ html_code = """
 </body>
 </html>
 """
-
-st.title('Tetris Game')
 
 # HTML 및 JavaScript 포함
 components.html(html_code, height=800)
