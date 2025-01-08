@@ -6,7 +6,7 @@ html_code = """
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Simple Tetris Game</title>
+    <title>Tetris Game</title>
     <style>
         body { text-align: center; }
         canvas { background: #000; display: block; margin: 0 auto; }
@@ -14,9 +14,11 @@ html_code = """
         .start { background-color: red; color: white; }
         .exit { background-color: blue; color: white; }
         .replay { background-color: green; color: white; }
+        #score { font-size: 20px; color: white; }
     </style>
 </head>
 <body>
+    <div id="score">Score: 0</div>
     <canvas id="gameCanvas" width="320" height="640"></canvas>
     <br>
     <div>
@@ -44,11 +46,14 @@ html_code = """
         let tetrominoY = 0; // Current tetromino Y coordinate
         let board = []; // Game board
         let dropInterval = null; // Interval for dropping tetromino
+        let score = 0; // Player's score
 
         function resetGame() {
             board = Array.from({ length: 20 }, () => Array(10).fill(0));
             nextTetromino = getNextTetromino();
             spawnTetromino();
+            score = 0;
+            updateScore();
         }
 
         function getNextTetromino() {
@@ -122,10 +127,23 @@ html_code = """
         }
 
         function clearLines() {
-            board = board.filter(row => row.some(value => value === 0));
+            let linesCleared = 0;
+            board = board.filter(row => {
+                if (row.every(value => value !== 0)) {
+                    linesCleared++;
+                    return false;
+                }
+                return true;
+            });
             while (board.length < 20) {
                 board.unshift(Array(10).fill(0));
             }
+            score += linesCleared * 10;
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score').innerText = 'Score: ' + score;
         }
 
         function gameOver() {
