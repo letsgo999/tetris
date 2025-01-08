@@ -9,6 +9,7 @@ html_code = """
     <title>Tetris Game</title>
     <style>
         body { text-align: center; color: white; background-color: black; }
+        h1 { margin-top: 0; padding-top: 20px; } /* 상단 여유 공간 추가 */
         canvas { 
             background: #000; 
             display: block; 
@@ -23,8 +24,9 @@ html_code = """
     </style>
 </head>
 <body>
+    <h1>Tetris Game</h1>
     <div id="score">Score: 0</div>
-    <canvas id="gameCanvas" width="320" height="640"></canvas>
+    <canvas id="gameCanvas" width="320" height="576"></canvas> <!-- 세로폭 두 칸 줄임 -->
     <br>
     <div>
         <button class="button start" onclick="startGame()">Start</button>
@@ -54,7 +56,7 @@ html_code = """
         let score = 0; // Player's score
 
         function resetGame() {
-            board = Array.from({ length: 20 }, () => Array(10).fill(0));
+            board = Array.from({ length: 18 }, () => Array(10).fill(0)); // 세로폭 두 칸 줄임
             nextTetromino = getNextTetromino();
             spawnTetromino();
             score = 0;
@@ -142,7 +144,7 @@ html_code = """
                 }
                 return true;
             });
-            while (board.length < 20) {
+            while (board.length < 18) { // 세로폭 두 칸 줄임
                 board.unshift(Array(10).fill(0));
             }
             score += linesCleared * 10;
@@ -168,7 +170,7 @@ html_code = """
             const originalX = tetrominoX;
             const originalY = tetrominoY;
             tetrominoX = Math.min(Math.max(tetrominoX, 0), 10 - rotated[0].length);
-            tetrominoY = Math.min(Math.max(tetrominoY, 0), 20 - rotated.length);
+            tetrominoY = Math.min(Math.max(tetrominoY, 0), 18 - rotated.length); // 세로폭 두 칸 줄임
             if (!collision()) {
                 tetromino = rotated;
             } else {
@@ -211,6 +213,7 @@ html_code = """
                     tetrominoX--;
                 }
             } else if (e.key === 'ArrowDown') {
+                e.preventDefault(); // 아래 방향 화살키 눌렀을 때 스크롤 방지
                 tetrominoY++;
                 if (collision()) {
                     tetrominoY--;
