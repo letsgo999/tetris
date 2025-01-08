@@ -1,116 +1,161 @@
 import streamlit as st
-import pygame
-import random
+import streamlit.components.v1 as components
 
-# Pygame 초기화
-pygame.init()
+# HTML과 JavaScript를 포함한 테트리스 코드
+html_code = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Tetris Game</title>
+    <style>
+        body { text-align: center; }
+        canvas { background: #000; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <h1>Simple Tetris Game</h1>
+    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const context = canvas.getContext('2d');
+        const grid = 32;
+        const tetrominoes = [
+            [[1, 1, 1], [0, 1, 0]],
+            [[0, 1, 1], [1, 1, 0]],
+            [[1, 1, 0], [0, 1, 1]],
+            [[1, 0, 0], [1, 1, 1]],
+            [[0, 0, 1], [1, 1, 1]],
+            [[1, 1, 1, 1]],
+            [[1, 1], [1, 1]]
+        ];
+        let rAF = null; // Animation frame request ID
+        let tetromino = null; // Current tetromino
+        let nextTetromino = null; // Next tetromino
+        let tetrominoX = 0; // Current tetromino X coordinate
+        let tetrominoY = 0; // Current tetromino Y coordinate
+        let board = []; // Game board
 
-# 게임 화면 크기 설정
-screen_width = 300
-screen_height = 600
-block_size = 30
+        function resetGame() {
+            board = Array.from({ length: 20 }, () => Array(10).fill(0));
+            nextTetromino = getNextTetromino();
+            spawnTetromino();
+        }
 
-# 색상 정의
-black = (0, 0, 0)
-white = (255, 255, 255)
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
+        function getNextTetromino() {
+            const index = Math.floor(Math.random() * tetrominoes.length);
+            return tetrominoes[index];
+        }
 
-# 블록 모양 정의
-shapes = [
-    [[1, 1, 1],
-     [0, 1, 0]],
+        function spawnTetromino() {
+            tetromino = nextTetromino;
+            nextTetromino = getNextTetromino();
+            tetrominoX = Math.floor((10 - tetromino[0].length) / 2);
+            tetrominoY = 0;
+        }
 
-    [[0, 1, 1],
-     [1, 1, 0]],
+        function drawTetromino() {
+            context.fillStyle = 'red';
+            tetromino.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        context.fillRect((tetrominoX + x) * grid, (tetrominoY + y) * grid, grid, grid);
+                    }
+                });
+            });
+        }
 
-    [[1, 1, 0],
-     [0, 1, 1]],
+        function drawBoard() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            board.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        context.fillStyle = 'blue';
+                        context.fillRect(x * grid, y * grid, grid, grid);
+                    }
+                });
+            });
+        }
 
-    [[1, 0, 0],
-     [1, 1, 1]],
+        function updateGame() {
+            tetrominoY++;
+            if (collision()) {
+                tetrominoY--;
+                mergeTetromino();
+                clearLines();
+                if (gameOver()) {
+                    resetGame();
+                } else {
+                    spawnTetromino();
+                }
+            }
+        }
 
-    [[0, 0, 1],
-     [1, 1, 1]],
+        function collision() {
+            for (let y = 0; y < tetromino.length; y++) {
+                for (let x = 0; x < tetromino[y].length; x++) {
+                    if (tetromino[y][x] && (board[tetrominoY + y] && board[tetrominoY + y][tetrominoX + x]) !== 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 
-    [[1, 1, 1, 1]],
+        function mergeTetromino() {
+            tetromino.forEach((row, y) => {
+                row.forEach((value, x) => {
+                    if (value) {
+                        board[tetrominoY + y][tetrominoX + x] = value;
+                    }
+                });
+            });
+        }
 
-    [[1, 1],
-     [1, 1]]
-]
+        function clearLines() {
+            board = board.filter(row => row.some(value => value === 0));
+            while (board.length < 20) {
+                board.unshift(Array(10).fill(0));
+            }
+        }
 
-# 블록 클래스 정의
-class Block:
-    def __init__(self, x, y, shape):
-        self.x = x
-        self.y = y
-        self.shape = shape
-        self.color = random.choice([red, green, blue])
+        function gameOver() {
+            return board[0].some(value => value !== 0);
+        }
 
-    def draw(self, screen):
-        for i, row in enumerate(self.shape):
-            for j, val in enumerate(row):
-                if val:
-                    pygame.draw.rect(screen, self.color, (self.x + j * block_size, self.y + i * block_size, block_size, block_size))
+        function gameLoop() {
+            updateGame();
+            drawBoard();
+            drawTetromino();
+            rAF = requestAnimationFrame(gameLoop);
+        }
 
-# 게임 오버 함수
-def check_game_over(board):
-    for i in range(len(board[0])):
-        if board[0][i] != 0:
-            return True
-    return False
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                tetrominoX--;
+                if (collision()) {
+                    tetrominoX++;
+                }
+            } else if (e.key === 'ArrowRight') {
+                tetrominoX++;
+                if (collision()) {
+                    tetrominoX--;
+                }
+            } else if (e.key === 'ArrowDown') {
+                tetrominoY++;
+                if (collision()) {
+                    tetrominoY--;
+                }
+            }
+        });
 
-# 메인 게임 함수
-def main():
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption('Tetris')
+        resetGame();
+        gameLoop();
+    </script>
+</body>
+</html>
+"""
 
-    clock = pygame.time.Clock()
-    board = [[0 for _ in range(screen_width // block_size)] for _ in range(screen_height // block_size)]
-
-    current_block = Block(screen_width // 2 // block_size * block_size, 0, random.choice(shapes))
-
-    running = True
-    while running:
-        screen.fill(black)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            current_block.x -= block_size
-        if keys[pygame.K_RIGHT]:
-            current_block.x += block_size
-        if keys[pygame.K_DOWN]:
-            current_block.y += block_size
-
-        current_block.y += block_size
-
-        if current_block.y >= screen_height - block_size * len(current_block.shape):
-            for i, row in enumerate(current_block.shape):
-                for j, val in enumerate(row):
-                    if val:
-                        board[(current_block.y // block_size) + i][(current_block.x // block_size) + j] = current_block.color
-            current_block = Block(screen_width // 2 // block_size * block_size, 0, random.choice(shapes))
-
-        current_block.draw(screen)
-
-        for i, row in enumerate(board):
-            for j, val in enumerate(row):
-                if val:
-                    pygame.draw.rect(screen, val, (j * block_size, i * block_size, block_size, block_size))
-
-        if check_game_over(board):
-            running = False
-
-        pygame.display.flip()
-        clock.tick(10)
-
-    pygame.quit()
-
-# 스트림릿 앱 설정
 st.title('Tetris Game')
-if st.button('Start Game'):
-    main()
+
+# HTML 및 JavaScript 포함
+components.html(html_code, height=700)
