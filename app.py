@@ -8,13 +8,13 @@ html_code = """
 <head>
     <title>Tetris Game</title>
     <style>
-        body { text-align: center; }
+        body { text-align: center; color: white; background-color: black; }
         canvas { background: #000; display: block; margin: 0 auto; }
         .button { border-radius: 50%; width: 80px; height: 80px; font-size: 20px; cursor: pointer; margin: 5px; }
         .start { background-color: red; color: white; }
         .exit { background-color: blue; color: white; }
         .replay { background-color: green; color: white; }
-        #score { font-size: 20px; color: white; margin-top: 10px; }
+        #score { font-size: 20px; margin-top: 10px; }
     </style>
 </head>
 <body>
