@@ -135,6 +135,20 @@ html_code = """
             rAF = requestAnimationFrame(gameLoop);
         }
 
+        function rotateTetromino() {
+            const rotated = tetromino[0].map((_, index) => tetromino.map(row => row[index])).reverse();
+            const originalX = tetrominoX;
+            const originalY = tetrominoY;
+            tetrominoX = Math.min(Math.max(tetrominoX, 0), 10 - rotated[0].length);
+            tetrominoY = Math.min(Math.max(tetrominoY, 0), 20 - rotated.length);
+            if (!collision()) {
+                tetromino = rotated;
+            } else {
+                tetrominoX = originalX;
+                tetrominoY = originalY;
+            }
+        }
+
         function startGame() {
             canvas.style.display = 'block';
             resetGame();
@@ -162,6 +176,8 @@ html_code = """
                 if (collision()) {
                     tetrominoY--;
                 }
+            } else if (e.key === 'ArrowUp') {
+                rotateTetromino();
             }
         });
     </script>
